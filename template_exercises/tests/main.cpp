@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "lexer_tests.cpp"
+#include "arithmetics_tests.cpp"
+#include "typelist_tests.cpp"
 
 int main(int argc, char **argv)
 {
