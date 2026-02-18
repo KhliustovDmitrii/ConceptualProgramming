@@ -1,6 +1,8 @@
 #ifndef _TYPELIST_H_
 #define _TYPELIST_H_
 
+#include "utils.h"
+
 namespace typelist
 {
 // singly linked list
@@ -93,6 +95,28 @@ struct Access<Typelist<H, T>, index>
     using Result = Access<T, index-1>::Result;
 };
 
+// delete first occurence of element
+template <typename E, typename TList>
+struct DeleteFirst;
+
+template <typename E>
+struct DeleteFirst<E, NullType>
+{
+    using Result = NullType;
+};
+
+template <typename E, typename T>
+struct DeleteFirst<E, Typelist<E, T>>
+{
+    using Result = T;
+};
+
+template <typename E, typename H, typename T>
+struct DeleteFirst<E, Typelist<H, T>>
+{
+    using Result = Typelist<H, DeleteFirst<E, T>::Result>;
+};
+
 // ------ General algorithms
 
 // list reversion
@@ -153,6 +177,59 @@ struct Reduce<Typelist<H, T>, Function, SV>
 
 // ------ Numeric algorithms
 
+// auxillary function for finding maximum
+template <typename SV, typename TList>
+struct MaxHelper;
+
+template <typename SV>
+struct MaxHelper<SV, NullType>
+{
+    using Result = SV;
+};
+
+template <typename SV, typename H, typename T>
+struct MaxHelper<SV, Typelist<H, T>>
+{
+    using Result = utils::Conditional<
+    (SV::value > H::value), 
+    MaxHelper<SV, T>::Result, 
+    MaxHelper<H, T>::Result>::Result;
+};
+
+// find maximum
+template <typename TList>
+struct Max;
+
+template <typename H, typename T>
+struct Max<Typelist<H, T>>
+{
+    using Result = typename MaxHelper<H, T>::Result;
+};
+
+// sorting
+template <typename TList>
+struct Sort;
+
+template <>
+struct Sort<NullType>
+{
+    using Result = NullType;
+};
+
+template <typename H, typename T>
+struct Sort<Typelist<H, T>>
+{
+    using Result = Typelist
+    <
+        Max<Typelist<H, T>>::Result,
+        Sort<
+            DeleteFirst<
+                Max<Typelist<H, T>>::Result,
+                Typelist<H, T>
+            >::Result
+        >::Result
+    >;
+};
 
 }; //typelist
 
