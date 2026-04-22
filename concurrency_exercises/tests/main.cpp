@@ -4,6 +4,8 @@
 #include "threadsafe_stack_tests.cpp"
 #include "hierarchical_mutex_tests.cpp"
 #include "threadsafe_queue_tests.cpp"
+#include "quick_sort_tests.cpp"
+#include "threadsafe_lookup_table_tests.cpp"
 
 int main(int argc, char **argv)
 {
